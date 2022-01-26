@@ -9,8 +9,8 @@
  * @wordpress-plugin
  * Plugin Name: Digging the Digital Custom Functions
  * Plugin URI: https://diggingthedigital.com/
- * Description: This plugin contains all of my custom functions.
- * Version: 0.1
+ * Description: This plugin contains all of my custom functions. It's amazin
+ * Version: 0.2
  * Author: Frank Meeuwsen
  * Author URI: https://diggingthedigital.com/
  * Text Domain: dtd
