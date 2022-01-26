@@ -18,14 +18,19 @@
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-add_filter('wp_nav_menu_items', 'custom_menu_extras', 10, 2);
-add_filter('genesis_markup_search-form-submit_open', 'custom_search_form_submit');
-//Change search form text
-add_filter('genesis_search_text', 'custom_search_button_text');
-
-// Microformats toevoegen
+// Microformats toevoegen in de header
 add_action('wp_head', 'microformats_header');
 
+// Disable Google's floc
+add_filter('wp_headers', 'disable_floc');
+
+//Add search bar and change search form text
+add_filter('wp_nav_menu_items', 'dtd_menu_extras', 10, 2);
+add_filter('genesis_markup_search-form-submit_open', 'dtd_search_form_submit');
+add_filter('genesis_search_text', 'dtd_search_button_text');
+
+
+// Apply microformats to posts
 add_filter('genesis_attr_entry-title', 'entry_title');
 // add_filter( 'genesis_attr_entry-title-link', 'entry_title_link' );
 add_filter('genesis_attr_entry-content', 'entry_content');
@@ -39,17 +44,21 @@ add_filter('genesis_attr_author-archive-description', 'author_archive_descriptio
 add_filter('post_class', 'post_content', 10, 3);
 add_filter('genesis_post_categories_shortcode', 'category_shortcode_class');
 add_filter('genesis_post_title_output', 'singular_entry_title_link', 10, 3);
+
 add_shortcode('dtd_permalink', 'dtd_permalink');
-add_action('genesis_before_loop', 'themeprefix_remove_post_info');
-add_filter('wp_headers', 'disable_floc');
+// add_action('genesis_before_loop', 'themeprefix_remove_post_info');
 // add_shortcode('my_permalink', 'my_permalink');
+
+// Toevoegingen aan de RSS feed
 add_filter('the_excerpt_rss', 'my_excerpt_rss');
 add_filter('the_content_feed', 'my_content_feed');
 
+// Plugin Simple Social Icons wat aangepast
 add_filter('simple_social_default_profiles', 'custom_reorder_simple_icons');
 add_filter('simple_social_icon_html', 'custom_social_icon_html');
 
-add_filter('genesis_post_info', 'cd_post_info_filter');
+// Tweak de headerinfo per post (kan nog beter)
+add_filter('genesis_post_info', 'dtd_post_info_filter');
 add_action('admin_post_add_foobar', 'public_to_private');
 //* Display author box on single posts
 // add_filter( 'get_the_author_genesis_author_box_single', '__return_true' );
@@ -59,7 +68,6 @@ add_post_type_support('post', 'genesis-singular-images');
 add_action('genesis_before_entry_content', 'genesis_do_singular_image');
 
 // add_filter('genesis_entry_content','dtd_show_full_likes');
-// Remove permalink onder post kind articles zonder titel
 remove_action('genesis_entry_content', 'genesis_do_post_content', 10);
 
 // Om de permalink bij notities weg te halen moet ik deze in een aparte functie aanroepen ipv direct. 
@@ -77,7 +85,7 @@ add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
  *
  * @return string Amended HTML string of list items.
  */
-function custom_menu_extras($menu, $args)
+function dtd_menu_extras($menu, $args)
 {
 
 	if ('primary' !== $args->theme_location) {
@@ -95,7 +103,7 @@ function custom_menu_extras($menu, $args)
  *
  * @return string Modified HTML for search forms' submit button.
  */
-function custom_search_form_submit()
+function dtd_search_form_submit()
 {
 
 	$search_button_text = apply_filters('genesis_search_button_text', esc_attr__('Search', 'genesis'));
@@ -107,7 +115,7 @@ function custom_search_form_submit()
 
 
 
-function custom_search_button_text($text)
+function dtd_search_button_text($text)
 {
 	return ('Vind je favoriete artikel');
 }
@@ -373,7 +381,7 @@ add_shortcode('blogroll_links', function () {
 
 
 
-function cd_post_info_filter($post_info)
+function dtd_post_info_filter($post_info)
 {
 
 	// get author details
