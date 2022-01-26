@@ -79,7 +79,7 @@ add_action('genesis_entry_content', 'dtd_single_post_nav', 30);
 
 
 // Oude textile posts on the spot aanpassen. Nu nog uit omdat ik de pandoc shizzle nog moet testen op live. 
-// add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
+add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
 
 //* Modify the Genesis content limit read more link
 add_filter('get_the_content_more_link', 'dtd_read_more_link');
