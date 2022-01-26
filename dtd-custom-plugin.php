@@ -75,7 +75,19 @@ remove_action('genesis_entry_content', 'genesis_do_post_content', 10);
 add_filter('genesis_entry_content', 'dtd_remove_genesis_do_post_permalink');
 
 add_action('genesis_entry_content', 'dtd_single_post_nav', 30);
-add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
+
+
+
+// Oude textile posts on the spot aanpassen. Nu nog uit omdat ik de pandoc shizzle nog moet testen op live. 
+// add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
+
+//* Modify the Genesis content limit read more link
+add_filter('get_the_content_more_link', 'dtd_read_more_link');
+
+/**  ===============================================================
+ * START FUNCTIES
+ *  ===============================================================
+ */
 
 /**
  * Filter menu items, appending a a search icon at the end.
@@ -549,4 +561,9 @@ function dtd_textile_be_gone($content){
 
 function dtd_remove_genesis_do_post_permalink(){
 	remove_filter('genesis_entry_content', 'genesis_do_post_permalink',14);
+}
+
+function dtd_read_more_link()
+{
+	return '... <p><a class="more-link" href="' . get_permalink() . '">[Lees verder]</a></p>';
 }
