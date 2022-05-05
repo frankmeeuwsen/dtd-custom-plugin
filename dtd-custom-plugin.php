@@ -56,6 +56,7 @@ add_filter('the_content_feed', 'my_content_feed');
 // Plugin Simple Social Icons wat aangepast
 add_filter('simple_social_default_profiles', 'custom_reorder_simple_icons');
 add_filter('simple_social_icon_html', 'custom_social_icon_html');
+// add_filter('simple_social_default_profiles', 'custom_add_new_simple_icon');
 
 // Tweak de headerinfo per post (kan nog beter)
 add_filter('genesis_post_info', 'dtd_post_info_filter');
@@ -342,7 +343,6 @@ function custom_reorder_simple_icons($icons)
 	$new_icon_order = array(
 		'rss'         => '',
 		'linkedin'    => '',
-		'medium'      => '',
 		'twitter'     => '',
 		'github'      => '',
 		'instagram'   => '',
@@ -376,6 +376,16 @@ function custom_reorder_simple_icons($icons)
 function custom_social_icon_html($html)
 {
 	return str_replace('<a', '<a rel="me"', $html);
+}
+
+function custom_add_new_simple_icon($icons)
+{
+	$icons['mastodon'] = [
+		'label'   => __('Mastodon', 'simple-social-icons'),
+		'pattern' => '<li class="social-mastodon"><a href="%s" %s><svg role="img" class="social-mastodon-svg" aria-labelledby="social-mastodon"><title id="social-mastodon">' . __('Mastodon icon', 'simple-social-icons') . '</title><use xlink:href="' . esc_url(get_stylesheet_directory_uri(__FILE__) . '/ssi.svg#social-mastodon') . '"></use></svg></a></li>',
+	];
+
+	return $icons;
 }
 
 add_shortcode('blogroll_links', function () {
