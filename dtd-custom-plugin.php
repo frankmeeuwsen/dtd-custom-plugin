@@ -52,7 +52,7 @@ add_shortcode('dtd_permalink', 'dtd_permalink');
 // Toevoegingen aan de RSS feed
 add_filter('the_excerpt_rss', 'my_excerpt_rss');
 add_filter('the_content_feed', 'my_content_feed');
-
+add_action('rss_tag_pre', 'dtd_add_namespace');
 // Plugin Simple Social Icons wat aangepast
 add_filter('simple_social_default_profiles', 'custom_reorder_simple_icons');
 add_filter('simple_social_icon_html', 'custom_social_icon_html');
@@ -334,7 +334,12 @@ function my_content_feed($content)
 	return $content;
 }
 
-
+function dtd_add_namespace(){
+	if(is_feed()){
+		echo
+		'<?xml-stylesheet href="'. get_stylesheet_directory_uri(__FILE__) .'/feed.xsl' . '" type="text/xsl"?>';
+	}
+}
 
 function custom_reorder_simple_icons($icons)
 {
