@@ -52,7 +52,7 @@ add_shortcode('dtd_permalink', 'dtd_permalink');
 // Toevoegingen aan de RSS feed
 add_filter('the_excerpt_rss', 'my_excerpt_rss');
 add_filter('the_content_feed', 'my_content_feed');
-add_action('rss_tag_pre', 'dtd_add_namespace');
+add_action('rss_tag_pre', 'dtd_add_namespace', 2,0);
 // Plugin Simple Social Icons wat aangepast
 add_filter('simple_social_default_profiles', 'custom_reorder_simple_icons');
 add_filter('simple_social_icon_html', 'custom_social_icon_html');
