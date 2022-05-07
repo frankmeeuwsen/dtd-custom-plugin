@@ -52,7 +52,12 @@ add_shortcode('dtd_permalink', 'dtd_permalink');
 // Toevoegingen aan de RSS feed
 add_filter('the_excerpt_rss', 'my_excerpt_rss');
 add_filter('the_content_feed', 'my_content_feed');
-add_action('rss_tag_pre', 'dtd_add_namespace', 2,0);
+add_action('rss_tag_pre', 'dtd_add_namespace');
+add_filter('feed_content_type', function () {
+	return 'text/xml';
+});
+
+
 // Plugin Simple Social Icons wat aangepast
 add_filter('simple_social_default_profiles', 'custom_reorder_simple_icons');
 add_filter('simple_social_icon_html', 'custom_social_icon_html');
@@ -67,6 +72,7 @@ add_action('admin_post_add_foobar', 'public_to_private');
 remove_action('genesis_entry_content', 'genesis_do_singular_image', 8);
 add_post_type_support('post', 'genesis-singular-images');
 add_action('genesis_before_entry_content', 'genesis_do_singular_image');
+// add_filter('the_title', 'dtd_post_kind_title');
 
 // add_filter('genesis_entry_content','dtd_show_full_likes');
 remove_action('genesis_entry_content', 'genesis_do_post_content', 10);
@@ -110,6 +116,13 @@ function dtd_menu_extras($menu, $args)
 	return $menu;
 }
 
+
+function dtd_post_kind_title($title){
+	if (has_post_kind('note') & in_the_loop()) {
+		$title = kind_get_the_title();
+	}
+	return $title;
+}
 
 /**
  * Change Search Form submit button markup.
