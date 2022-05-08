@@ -107,6 +107,12 @@ add_action('webmention_post_send', function ($response, $source, $target, $post_
 	}
 }, 10, 4);
 
+add_filter( 'share_on_mastodon_status', function( $status, $post ) {
+$status = wp_strip_all_tags( $post->post_content );
+$status .= "\n\n" . get_permalink( $post );
+return $status;
+}, 10, 2 );
+
 /**  ===============================================================
  * START FUNCTIES
  *  ===============================================================
