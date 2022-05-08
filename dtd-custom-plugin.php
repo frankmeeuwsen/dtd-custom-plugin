@@ -90,6 +90,22 @@ add_action('genesis_entry_content', 'dtd_single_post_nav', 30);
 
 //* Modify the Genesis content limit read more link
 add_filter('get_the_content_more_link', 'dtd_read_more_link');
+add_action('post_updated', function($post_id){
+	error_log('Post '.$post_id.' updated');
+});
+add_action('publish_post', function($post_id){
+	error_log('Post '.$post_id.' published');
+});
+
+add_action('webmention_post_send', function ($response, $source, $target, $post_id) {
+
+	if (is_wp_error($response)) {
+		// Something went wrong.
+		error_log('Error trying to send webmention to ' . esc_url_raw($target) . ': ' . $response->get_error_message());
+	} else {
+		error_log('Sent webmention to ' . esc_url_raw($target) . '; response code: ' . wp_remote_retrieve_response_code($response));
+	}
+}, 10, 4);
 
 /**  ===============================================================
  * START FUNCTIES
