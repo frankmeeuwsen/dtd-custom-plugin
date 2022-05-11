@@ -57,6 +57,7 @@ add_filter('feed_content_type', function () {
 	return 'text/xml';
 });
 add_filter( 'the_title_rss', 'dtd_changeLikeText' );
+add_filter('the_permalink_rss', 'dtd_changeLikeURL' );
 
 // Gewoon weer de WP feed templates gebruiken ipv de Post Kinds templates
 remove_all_actions('do_feed_rss2');
@@ -101,13 +102,6 @@ add_action('genesis_entry_content', 'dtd_single_post_nav', 30);
 
 //* Modify the Genesis content limit read more link
 add_filter('get_the_content_more_link', 'dtd_read_more_link');
-add_action('post_updated', function($post_id){
-	error_log('Post '.$post_id.' updated');
-});
-add_action('publish_post', function($post_id){
-	error_log('Post '.$post_id.' published');
-});
-
 add_action('webmention_post_send', function ($response, $source, $target, $post_id) {
 
 	if (is_wp_error($response)) {
@@ -394,12 +388,24 @@ function dtd_changeLikeText($title){
 	$cite      = $kind_post->get_cite();
 	$cite      = $kind_post->normalize_cite($cite);
 	if (has_post_kind('like') && is_feed() && $title == '[Like]') {
-			error_log("Got an empty Like: " . get_the_permalink());
-			error_log(print_r($cite,true));
-			$title = sprintf('[%1$s] %2$s (%3$s)', $post_kind, $cite['name'], $cite['publication']);
+			$title = sprintf('[%1$s] %2$s (%3$s) %4$s', $post_kind, $cite['name'], $cite['publication'],'↗️');
 		return $title;
 	} else {
 		return $title;
+	}
+
+}
+function dtd_changeLikeURL($url){
+	$post_id = get_the_ID();
+	$post_kind = get_post_kind($post_id);
+	$kind_post = new Kind_Post($post_id);
+	$cite      = $kind_post->get_cite();
+	$cite      = $kind_post->normalize_cite($cite);
+	if (has_post_kind('like') && is_feed()) {
+		$url = $cite['url'];
+		return $url;
+	} else {
+		return $url;
 	}
 
 }
