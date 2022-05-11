@@ -56,6 +56,17 @@ add_action('rss_tag_pre', 'dtd_add_namespace');
 add_filter('feed_content_type', function () {
 	return 'text/xml';
 });
+add_filter( 'the_title_rss', 'dtd_changeLikeText' );
+
+// Gewoon weer de WP feed templates gebruiken ipv de Post Kinds templates
+remove_all_actions('do_feed_rss2');
+remove_all_actions('do_feed_atom');
+add_action('do_feed_rss2', function(){
+	do_feed_rss2(false);
+}, 10, 1);
+add_action('do_feed_atom', function(){
+	do_feed_atom(false);
+}, 10, 1);
 
 
 // Plugin Simple Social Icons wat aangepast
@@ -376,6 +387,23 @@ function dtd_add_namespace(){
 	}
 }
 
+function dtd_changeLikeText($title){
+	$post_id = get_the_ID();
+	$post_kind = get_post_kind($post_id);
+	$kind_post = new Kind_Post($post_id);
+	$cite      = $kind_post->get_cite();
+	$cite      = $kind_post->normalize_cite($cite);
+	if (has_post_kind('like') && is_feed() && $title == '[Like]') {
+			error_log("Got an empty Like: " . get_the_permalink());
+			error_log(print_r($cite,true));
+			$title = sprintf('[%1$s] %2$s (%3$s)', $post_kind, $cite['name'], $cite['publication']);
+		return $title;
+	} else {
+		return $title;
+	}
+
+}
+
 function custom_reorder_simple_icons($icons)
 {
 
@@ -565,22 +593,6 @@ function dtd_filternote($title)
 	return $title;
 };
 
-// add custom content to all feeds
-function dtd_add_content_to_all_feeds($content)
-{
-
-	$before = 'Like of'.$post->url;
-	// $after = '<p>Custom content displayed after content.</p>';
-
-	if (is_feed() && has_post_kind('like', $post->ID)) {
-
-		return $before . $content; //. $after;
-	} else {
-
-		return $content;
-	}
-}
-// add_filter('the_excerpt_rss', 'dtd_add_content_to_all_feeds');
 
 // function dtd_show_full_likes(){
 	
