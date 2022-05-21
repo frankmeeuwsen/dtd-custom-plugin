@@ -83,7 +83,7 @@ add_action('admin_post_add_foobar', 'public_to_private');
 
 remove_action('genesis_entry_content', 'genesis_do_singular_image', 8);
 add_post_type_support('post', 'genesis-singular-images');
-add_action('genesis_before_entry_content', 'genesis_do_singular_image');
+// add_action('genesis_before_entry_content', 'genesis_do_singular_image');
 // add_filter('the_title', 'dtd_post_kind_title');
 
 // add_filter('genesis_entry_content','dtd_show_full_likes');
