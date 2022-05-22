@@ -95,10 +95,7 @@ add_filter('genesis_entry_content', 'dtd_remove_genesis_do_post_permalink');
 
 add_action('genesis_entry_content', 'dtd_single_post_nav', 30);
 
-
-
-// Oude textile posts on the spot aanpassen. Nu nog uit omdat ik de pandoc shizzle nog moet testen op live. 
-// add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
+add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
 
 //* Modify the Genesis content limit read more link
 add_filter('get_the_content_more_link', 'dtd_read_more_link');
@@ -209,7 +206,7 @@ function microformats_header()
 
 
 function entry_title($attributes)
-{
+{	
 	$attributes['class'] .= ' p-entry-title p-name';
 	$attributes['id'] .= get_the_ID();
 	return $attributes;
@@ -599,32 +596,18 @@ function dtd_filternote($title)
 	return $title;
 };
 
-
-// function dtd_show_full_likes(){
-	
-// }
-
-// add_action('genesis_before_entry', 'dtd_textile_be_gone');
-
-
 function dtd_textile_be_gone($content){
 	if(strpos( get_the_content(), '":http' ) !== false){
 		remove_filter('genesis_entry_content','genesis_do_post_content');
-		// $content = 'Nieuwe content';
-	require_once(get_stylesheet_directory() . '/vendor/autoload.php');
-		$content = (new \Pandoc\Pandoc)
-			->from('textile')
-			->input(get_the_content())
-			->to('html')
-			->option('css', get_stylesheet_uri())
-			->run();
-		// } else{
-	// 	$output_content = get_the_content();
-	// }
+		require_once(get_stylesheet_directory() . '/vendor/autoload.php');
+		$content = new \Netcarver\Textile\Parser();
+		echo $content
+			->setDocumentType('html5')
+// Hier nog een preg_replace om de image direct zichtbaar te maken. Met harde link naar een aparte dir in de uploads dir. 
+			->parse(preg_replace('#\[\[image:(.*)::(.*):(.*)\]\]#', '<img src="/wp-content/uploads/punkeycomimages/${1}" class="aligncenter"/><br />', get_the_content()));
+	} else {
+	$content = get_the_content();
 	}
-
-	echo $content;
-
 }
 
 function dtd_remove_genesis_do_post_permalink(){
@@ -635,3 +618,10 @@ function dtd_read_more_link()
 {
 	return '... <p><a class="more-link" href="' . get_permalink() . '">[Lees verder]</a></p>';
 }
+
+add_filter( 'import_from_pixelfed_args', function ( $args ) { 
+	// Set post category. 
+	$args['post_category'] = array(14);
+	$args['post_author'] = 8; 
+	// Or `array( 1, 11 )` or whatever ;-) 
+	return $args; } );
