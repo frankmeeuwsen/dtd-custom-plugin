@@ -95,7 +95,6 @@ add_filter('genesis_entry_content', 'dtd_remove_genesis_do_post_permalink');
 
 add_action('genesis_entry_content', 'dtd_single_post_nav', 30);
 
-add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
 
 //* Modify the Genesis content limit read more link
 add_filter('get_the_content_more_link', 'dtd_read_more_link');
@@ -596,6 +595,7 @@ function dtd_filternote($title)
 	return $title;
 };
 
+add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
 function dtd_textile_be_gone($content){
 	if(strpos( get_the_content(), '":http' ) !== false){
 		remove_filter('genesis_entry_content','genesis_do_post_content');
@@ -603,9 +603,10 @@ function dtd_textile_be_gone($content){
 		$content = new \Netcarver\Textile\Parser();
 		echo $content
 			->setDocumentType('html5')
-// Hier nog een preg_replace om de image direct zichtbaar te maken. Met harde link naar een aparte dir in de uploads dir. 
-			->parse(preg_replace('#\[\[image:(.*)::(.*):(.*)\]\]#', '<img src="/wp-content/uploads/punkeycomimages/${1}" class="aligncenter"/><br />', get_the_content()));
-	} else {
+		// Hier nog een preg_replace om de image direct zichtbaar te maken. Met harde link naar een aparte dir in de uploads dir. 
+		// ->parse(preg_replace('#\[\[image:(.*)::(.*):(.*)\]\]#', '<img src="/wp-content/uploads/punkeycomimages/${1}" class="aligncenter"/><br />', get_the_content()));
+			->parse(get_the_content());	
+		} else {
 	$content = get_the_content();
 	}
 }
