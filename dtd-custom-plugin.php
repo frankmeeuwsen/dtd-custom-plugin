@@ -583,7 +583,7 @@ function add_open_newsletter_taxonomy($post_id, $post, $update)
 add_image_size('genesis-singular-images', 800, 400, true);
 
 // Give bookmarks specific emoji and remove older "Bookmark: " prefix
-add_filter('the_title', 'dtd_filternote');
+// add_filter('the_title', 'dtd_filternote');
 function dtd_filternote($title)
 {
 	if (has_post_kind('bookmark') & in_the_loop()) {
@@ -626,3 +626,11 @@ add_filter( 'import_from_pixelfed_args', function ( $args ) {
 	$args['post_author'] = 8; 
 	// Or `array( 1, 11 )` or whatever ;-) 
 	return $args; } );
+
+	// Het werkt maar de class is nog niet helemaal netjes. Moet eigenlijk aan post_meta worden toegevoegd. 
+add_action('genesis_entry_footer', 'dtd_post_pixelfed',20);
+function dtd_post_pixelfed($post){
+	if(metadata_exists('post',get_the_ID(), '_import_from_pixelfed_url')){
+	echo sprintf('<p class="entry-meta">Gepost op <a href="%s">Pixelfed</a></p>', get_post_meta(get_the_ID(), '_import_from_pixelfed_url', true));
+	}
+	}
