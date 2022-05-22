@@ -604,8 +604,8 @@ function dtd_textile_be_gone($content){
 		echo $content
 			->setDocumentType('html5')
 		// Hier nog een preg_replace om de image direct zichtbaar te maken. Met harde link naar een aparte dir in de uploads dir. 
-		->parse(preg_replace('#\[\[image:(.*)::(.*):(.*)\]\]#', '<img src="/wp-content/uploads/punkeycomimages/${1}" class="aligncenter"/><br />', get_the_content()));
-			// ->parse(get_the_content());	
+			->parse(preg_replace('#\[\[image:([0-9A-Za-z]*)(\.jpg|\.gif|\.JPG|\.GIF|\.png|\.PNG)::([\w]*):([\d]*)\]\]#', '<img src="/wp-content/uploads/punkeycomimages/${1}${2}" class="aligncenter"/><br />', get_the_content()));
+		// ->parse(get_the_content());	
 		} else {
 	$content = get_the_content();
 	}
