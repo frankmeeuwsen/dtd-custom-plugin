@@ -634,3 +634,21 @@ function dtd_post_pixelfed($post){
 	echo sprintf('<p class="entry-meta">Gepost op <a href="%s">Pixelfed</a></p>', get_post_meta(get_the_ID(), '_import_from_pixelfed_url', true));
 	}
 	}
+
+
+// function rssLanguage()
+// {
+// 	update_option('rss_language', 'en');
+// }
+// add_action('admin_init', 'rssLanguage');
+
+add_action('init', 'customRSS');
+function customRSS()
+{
+	add_feed('dtd', 'customRSSFunc');
+}
+
+function customRSSFunc()
+{
+	get_template_part('feed', 'dtd');
+}
