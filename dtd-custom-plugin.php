@@ -371,9 +371,10 @@ function my_content_feed($content)
 }
 
 function dtd_add_namespace(){
-	if(is_feed()){
+	if(is_feed() && $_SERVER['REQUEST_URI']!=='/feed/dtd/'){
 		echo
 		'<?xml-stylesheet href="'. get_stylesheet_directory_uri(__FILE__) .'/feed.xsl' . '" type="text/xsl"?>';
+ 
 	}
 }
 
@@ -642,13 +643,13 @@ function dtd_post_pixelfed($post){
 // }
 // add_action('admin_init', 'rssLanguage');
 
-// add_action('init', 'customRSS');
-// function customRSS()
-// {
-// 	add_feed('dtd', 'customRSSFunc');
-// }
+add_action('init', 'customRSS');
+function customRSS()
+{
+	add_feed('dtd', 'customRSSFunc');
+}
 
-// function customRSSFunc()
-// {
-// 	get_template_part('feed', 'dtd');
-// }
+function customRSSFunc()
+{
+	get_template_part('feed', 'dtd');
+}
