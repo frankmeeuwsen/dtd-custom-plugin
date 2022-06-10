@@ -485,7 +485,7 @@ function dtd_post_info_filter($post_info)
 	$post_info = '[post_date] door ';
 	$post_info .= sprintf('<span class="author-avatar"><a href="%s">%s</a></span>', $author_link, $entry_author);
 	$post_info .= '[post_author_posts_link] [post_comments] ';
-	if (has_post_kind('note') | has_post_kind('like')) {
+	if (has_post_kind('note') | has_post_kind('like') | has_post_kind('reply')) {
 		$post_info .= sprintf('<span class="permalink"><a href="%s">§</a></span> ', get_permalink());
 	}
 	// $post_info .= '[post_edit]';
