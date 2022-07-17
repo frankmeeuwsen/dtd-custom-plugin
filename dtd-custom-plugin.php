@@ -81,8 +81,8 @@ add_action('admin_post_add_foobar', 'public_to_private');
 //* Display author box on single posts
 // add_filter( 'get_the_author_genesis_author_box_single', '__return_true' );
 
-remove_action('genesis_entry_content', 'genesis_do_singular_image', 8);
-add_post_type_support('post', 'genesis-singular-images');
+// remove_action('genesis_entry_content', 'genesis_do_singular_image', 8);
+// add_post_type_support('post', 'genesis-singular-images');
 // add_action('genesis_before_entry_content', 'genesis_do_singular_image');
 // add_filter('the_title', 'dtd_post_kind_title');
 
@@ -94,25 +94,28 @@ remove_action('genesis_entry_content', 'genesis_do_post_content', 10);
 add_filter('genesis_entry_content', 'dtd_remove_genesis_do_post_permalink');
 
 add_action('genesis_entry_content', 'dtd_single_post_nav', 30);
-
+add_action('genesis_entry_content', 'dtd_pixelfed_show_featured_image', 10);
 
 //* Modify the Genesis content limit read more link
 add_filter('get_the_content_more_link', 'dtd_read_more_link');
-add_action('webmention_post_send', function ($response, $source, $target, $post_id) {
+add_action('webmention_post_send', 'dtd_webmention_log', 10,4);
 
-	if (is_wp_error($response)) {
-		// Something went wrong.
-		error_log('Error trying to send webmention to ' . esc_url_raw($target) . ': ' . $response->get_error_message());
-	} else {
-		error_log('Sent webmention to ' . esc_url_raw($target) . '; response code: ' . wp_remote_retrieve_response_code($response));
-	}
-}, 10, 4);
+add_filter( 'share_on_mastodon_status', 'dtd_share_on_mastodon_status', 10,2);
 
-add_filter( 'share_on_mastodon_status', function( $status, $post ) {
-$status = wp_strip_all_tags( $post->post_content );
-$status .= "\n\n" . get_permalink( $post );
-return $status;
-}, 10, 2 );
+
+
+add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
+
+//  Add featured images
+add_image_size('genesis-singular-images', 800, 400, true);
+
+// Pixelfed dingen klaarmaken
+add_action('genesis_entry_footer', 'dtd_post_pixelfed', 20);
+add_filter('import_from_pixelfed_args', 'dtd_import_pixelfed_args', 20);
+
+// RSS related
+add_action('init', 'customRSS');
+add_filter('posts_where', 'publish_later_on_feed');
 
 /**  ===============================================================
  * START FUNCTIES
@@ -522,7 +525,15 @@ function public_to_private()
 }
 
 
+function dtd_pixelfed_show_featured_image()
+{
+	if(!is_singular('post'))
+	return;
+	if (metadata_exists('post', get_the_ID(), '_import_from_pixelfed_url')) {
+		the_post_thumbnail([250], ['class' => 'aligncenter']);
+	}
 
+}
 
 function dtd_single_post_nav()
 {
@@ -579,9 +590,6 @@ function add_open_newsletter_taxonomy($post_id, $post, $update)
 	}
 }
 
-//  Add featured images
-
-add_image_size('genesis-singular-images', 800, 400, true);
 
 // Give bookmarks specific emoji and remove older "Bookmark: " prefix
 // add_filter('the_title', 'dtd_filternote');
@@ -596,7 +604,7 @@ function dtd_filternote($title)
 	return $title;
 };
 
-add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
+
 function dtd_textile_be_gone($content){
 	if(strpos( get_the_content(), '":http' ) !== false){
 		remove_filter('genesis_entry_content','genesis_do_post_content');
@@ -621,20 +629,31 @@ function dtd_read_more_link()
 	return '... <p><a class="more-link" href="' . get_permalink() . '">[Lees verder]</a></p>';
 }
 
-add_filter( 'import_from_pixelfed_args', function ( $args ) { 
+
+function dtd_import_pixelfed_args( $args ) { 
 	// Set post category. 
 	$args['post_category'] = array(14);
-	$args['post_author'] = 8; 
+	$args['post_author'] = 1; 
 	// Or `array( 1, 11 )` or whatever ;-) 
-	return $args; } );
+	return $args; } ;
 
-	// Het werkt maar de class is nog niet helemaal netjes. Moet eigenlijk aan post_meta worden toegevoegd. 
-add_action('genesis_entry_footer', 'dtd_post_pixelfed',20);
+// Het werkt maar de class is nog niet helemaal netjes. Moet eigenlijk aan post_meta worden toegevoegd. 
 function dtd_post_pixelfed($post){
 	if(metadata_exists('post',get_the_ID(), '_import_from_pixelfed_url')){
 	echo sprintf('<p class="entry-meta">Gepost op <a href="%s">Pixelfed</a></p>', get_post_meta(get_the_ID(), '_import_from_pixelfed_url', true));
 	}
 	}
+
+function dtd_webmention_log($response, $source, $target, $post_id)
+{
+
+	if (is_wp_error($response)) {
+		// Something went wrong.
+		error_log('Error trying to send webmention to ' . esc_url_raw($target) . ': ' . $response->get_error_message());
+	} else {
+		error_log('Sent webmention to ' . esc_url_raw($target) . '; response code: ' . wp_remote_retrieve_response_code($response));
+	}
+};
 
 
 // function rssLanguage()
@@ -643,7 +662,6 @@ function dtd_post_pixelfed($post){
 // }
 // add_action('admin_init', 'rssLanguage');
 
-add_action('init', 'customRSS');
 function customRSS()
 {
 	add_feed('dtd', 'customRSSFunc');
@@ -673,5 +691,13 @@ function publish_later_on_feed($where) {
     }
     return $where;
 }
- 
-add_filter('posts_where', 'publish_later_on_feed');
+
+function dtd_share_on_mastodon_status($status, $post)
+{
+	$status = wp_strip_all_tags($post->post_content);
+	$status .= "\n\n" . get_permalink($post);
+	return $status;
+};
+
+
+// Voor auto generated title in slug zie https://wordpress.stackexchange.com/questions/52896/force-post-slug-to-be-auto-generated-from-title-on-save of check de filter in micropub plugin
