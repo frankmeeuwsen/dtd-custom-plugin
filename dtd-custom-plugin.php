@@ -81,7 +81,9 @@ add_action('admin_post_add_foobar', 'public_to_private');
 //* Display author box on single posts
 // add_filter( 'get_the_author_genesis_author_box_single', '__return_true' );
 
-// remove_action('genesis_entry_content', 'genesis_do_singular_image', 8);
+//  Add featured images
+add_image_size('genesis-singular-images', 400, 400, true);
+
 // add_post_type_support('post', 'genesis-singular-images');
 // add_action('genesis_before_entry_content', 'genesis_do_singular_image');
 // add_filter('the_title', 'dtd_post_kind_title');
@@ -106,8 +108,6 @@ add_filter( 'share_on_mastodon_status', 'dtd_share_on_mastodon_status', 10,2);
 
 add_filter('genesis_entry_content', 'dtd_textile_be_gone', 1);
 
-//  Add featured images
-add_image_size('genesis-singular-images', 800, 400, true);
 
 // Pixelfed dingen klaarmaken
 add_action('genesis_entry_footer', 'dtd_post_pixelfed', 20);
