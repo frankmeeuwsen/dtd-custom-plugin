@@ -718,7 +718,7 @@ function dtd_note_on_main(){
 
 function dtd_show_title_with_note($title){
 	// Limit the title to exactly 3 words only on the home page and when it's a note without a title
-	if (is_home() && has_post_kind('note') && $title ==='') {
+	if (!is_single() && has_post_kind('note') && $title ==='') {
 		return wp_trim_words(get_the_content(), 5, '…');
 	}
 	// Otherwise return the full title.
