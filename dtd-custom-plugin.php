@@ -101,6 +101,10 @@ add_action('genesis_entry_content', 'dtd_single_post_nav', 30);
 add_action('genesis_entry_content', 'dtd_pixelfed_show_featured_image', 10);
 add_action("genesis_entry_content", "dtd_note_on_main", 1);
 
+// Filter om bij een note zonder titel toch een titel te tonen. Madness. 
+add_filter('genesis_post_title_text', 'dtd_show_title_with_note');
+
+
 //* Modify the Genesis content limit read more link
 add_filter('get_the_content_more_link', 'dtd_read_more_link');
 add_action('webmention_post_send', 'dtd_webmention_log', 10,4);
@@ -712,5 +716,11 @@ function dtd_note_on_main(){
 	}
 }
 
-
-// Voor auto generated title in slug zie https://wordpress.stackexchange.com/questions/52896/force-post-slug-to-be-auto-generated-from-title-on-save of check de filter in micropub plugin
+function dtd_show_title_with_note($title){
+	// Limit the title to exactly 3 words only on the home page and when it's a note without a title
+	if (is_home() && has_post_kind('note') && $title ==='') {
+		return wp_trim_words(get_the_content(), 5, '…');
+	}
+	// Otherwise return the full title.
+	return $title;
+}
