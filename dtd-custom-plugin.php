@@ -709,10 +709,14 @@ function dtd_share_on_mastodon_status($status, $post)
 
 function dtd_note_on_main(){
 	remove_action('genesis_entry_content', 'genesis_do_post_content');
-	if (has_post_kind('note')){
-		the_content();
+	if(is_home()){
+		if (has_post_kind('note')){
+			the_content();
+		} else {
+			the_excerpt();
+		}
 	} else {
-		the_excerpt();
+		the_content();
 	}
 }
 
