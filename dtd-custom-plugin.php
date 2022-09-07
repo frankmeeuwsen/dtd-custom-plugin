@@ -89,7 +89,9 @@ add_image_size('genesis-singular-images', 400, 400, true);
 // add_filter('the_title', 'dtd_post_kind_title');
 
 // add_filter('genesis_entry_content','dtd_show_full_likes');
-remove_action('genesis_entry_content', 'genesis_do_post_content', 10);
+// remove_action('genesis_entry_content', 'genesis_do_post_content');
+
+
 
 // Om de permalink bij notities weg te halen moet ik deze in een aparte functie aanroepen ipv direct. 
 // Dit omdat het nu in een aparte plugin staat. 
@@ -97,6 +99,7 @@ add_filter('genesis_entry_content', 'dtd_remove_genesis_do_post_permalink');
 
 add_action('genesis_entry_content', 'dtd_single_post_nav', 30);
 add_action('genesis_entry_content', 'dtd_pixelfed_show_featured_image', 10);
+add_action("genesis_entry_content", "dtd_note_on_main", 1);
 
 //* Modify the Genesis content limit read more link
 add_filter('get_the_content_more_link', 'dtd_read_more_link');
@@ -622,6 +625,7 @@ function dtd_textile_be_gone($content){
 
 function dtd_remove_genesis_do_post_permalink(){
 	remove_filter('genesis_entry_content', 'genesis_do_post_permalink',14);
+	
 }
 
 function dtd_read_more_link()
@@ -698,6 +702,15 @@ function dtd_share_on_mastodon_status($status, $post)
 	$status .= "\n\n" . get_permalink($post);
 	return $status;
 };
+
+function dtd_note_on_main(){
+	remove_action('genesis_entry_content', 'genesis_do_post_content');
+	if (has_post_kind('note')){
+		the_content();
+	} else {
+		the_excerpt();
+	}
+}
 
 
 // Voor auto generated title in slug zie https://wordpress.stackexchange.com/questions/52896/force-post-slug-to-be-auto-generated-from-title-on-save of check de filter in micropub plugin
