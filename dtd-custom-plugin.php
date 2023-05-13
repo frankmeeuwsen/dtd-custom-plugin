@@ -729,12 +729,13 @@ function dtd_show_title_with_note($title){
 	return $title;
 }
 
-function search_results_title_only($content)
+add_filter('genesis_search_results_output', 'my_custom_search_results');
+function my_custom_search_results($content)
 {
 	if (is_search()) {
 		global $post;
-		$content = '<h2 class="entry-title"><a href="' . get_permalink($post->ID) . '">' . get_the_title($post->ID) . '</a></h2>';
+		$content = '<h2 class="entry-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h2>';
 	}
 	return $content;
 }
-add_filter('the_content', 'search_results_title_only');
+
