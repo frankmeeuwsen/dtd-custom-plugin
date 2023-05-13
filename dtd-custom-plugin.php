@@ -729,13 +729,13 @@ function dtd_show_title_with_note($title){
 	return $title;
 }
 
-add_filter('genesis_search_title_output', 'my_custom_search_results');
-function my_custom_search_results($content)
-{
-	if (is_search()) {
-		global $post;
-		$content = '<h2 class="entry-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h2>';
-	}
-	return $content;
-}
+// add_filter('genesis_search_title_output', 'my_custom_search_results');
+// function my_custom_search_results($content)
+// {
+// 	if (is_search()) {
+// 		global $post;
+// 		$content = '<h2 class="entry-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h2>';
+// 	}
+// 	return $content;
+// }
 
