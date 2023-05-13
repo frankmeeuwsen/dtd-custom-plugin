@@ -729,7 +729,7 @@ function dtd_show_title_with_note($title){
 	return $title;
 }
 
-add_filter('genesis_search_results_output', 'my_custom_search_results');
+add_filter('genesis_search_title_output', 'my_custom_search_results');
 function my_custom_search_results($content)
 {
 	if (is_search()) {
