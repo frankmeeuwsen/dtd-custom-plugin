@@ -728,3 +728,13 @@ function dtd_show_title_with_note($title){
 	// Otherwise return the full title.
 	return $title;
 }
+
+function search_results_title_only($content)
+{
+	if (is_search()) {
+		global $post;
+		$content = '<h2 class="entry-title"><a href="' . get_permalink($post->ID) . '">' . get_the_title($post->ID) . '</a></h2>';
+	}
+	return $content;
+}
+add_filter('the_content', 'search_results_title_only');
