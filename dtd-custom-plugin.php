@@ -84,8 +84,8 @@ add_action('admin_post_add_foobar', 'public_to_private');
 //  Add featured images
 add_image_size('genesis-singular-images', 400, 400, true);
 
-// add_post_type_support('post', 'genesis-singular-images');
-// add_action('genesis_before_entry_content', 'genesis_do_singular_image');
+add_post_type_support('post', 'genesis-singular-images');
+add_action('genesis_before_entry_content', 'genesis_do_singular_image');
 // add_filter('the_title', 'dtd_post_kind_title');
 
 // add_filter('genesis_entry_content','dtd_show_full_likes');
@@ -99,7 +99,7 @@ add_filter('genesis_entry_content', 'dtd_remove_genesis_do_post_permalink');
 
 add_action('genesis_entry_content', 'dtd_single_post_nav', 30);
 add_action('genesis_entry_content', 'dtd_pixelfed_show_featured_image', 10);
-add_action("genesis_entry_content", "dtd_note_on_main", 1);
+add_action("genesis_entry_content", "dtd_note_on_main", 2);
 
 // Filter om bij een note zonder titel toch een titel te tonen. Madness. 
 add_filter('genesis_post_title_text', 'dtd_show_title_with_note');
@@ -123,6 +123,10 @@ add_filter('import_from_pixelfed_args', 'dtd_import_pixelfed_args', 20);
 // RSS related
 add_action('init', 'customRSS');
 add_filter('posts_where', 'publish_later_on_feed');
+
+// Post Kinds weghalen
+// Dit is dus klote want dan moet je zelf weer alles er in gaan plakken naderhand...
+// add_filter( 'kind_content_display', '__return_false' );
 
 /**  ===============================================================
  * START FUNCTIES
@@ -217,7 +221,7 @@ function microformats_header()
 function entry_title($attributes)
 {	
 	$attributes['class'] .= ' p-entry-title p-name';
-	$attributes['id'] .= get_the_ID();
+	// $attributes['id'] .= get_the_ID();
 	return $attributes;
 }
 
@@ -708,16 +712,10 @@ function dtd_share_on_mastodon_status($status, $post)
 };
 
 function dtd_note_on_main(){
-	remove_action('genesis_entry_content', 'genesis_do_post_content');
-	if(is_home()){
-		if (has_post_kind('note')){
+	if(is_home() && ((has_post_kind('note') || has_post_kind('bookmark') || has_post_kind('like'))|| (function_exists('register_block_type') && has_blocks()))){
+			remove_action('genesis_entry_content', 'genesis_do_post_content');
 			the_content();
-		} else {
-			the_excerpt();
-		}
-	} else {
-		the_content();
-	}
+		} 
 }
 
 function dtd_show_title_with_note($title){
